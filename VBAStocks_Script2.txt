@@ -1,0 +1,78 @@
+Sub VBAStocksGreatestValues()
+
+Dim i, j As Integer
+Dim jump, decline As Double
+Dim largeTotal, stub As Long
+Dim tickInc, tickDec, tickTotal As String
+Dim ws As Worksheet
+
+'Go through each worksheet
+For Each ws In ActiveWorkbook.Worksheets
+    
+    'Set the labels
+    ws.Range("O1").Value = "Ticker"
+    ws.Range("P1").Value = "Value"
+    ws.Range("N2").Value = "Greatest % Increase"
+    ws.Range("N3").Value = "Greatest % Decrease"
+    ws.Range("N4").Value = "Greatest Total Volume"
+    
+    'Set both the default percentange increase and decrease values
+    If ws.Range("K2").Value > ws.Range("K3").Value Then
+        jump = ws.Range("K2").Value
+        tickInc = ws.Range("I2").Value
+        decline = ws.Range("K3").Value
+        tickDec = ws.Range("I3").Value
+    ElseIf ws.Range("K2").Value < ws.Range("K3").Value Then
+        decline = ws.Range("K2").Value
+        tickDec = ws.Range("I2").Value
+        jump = ws.Range("K3").Value
+        tickInc = ws.Range("I3").Value
+    Else
+        jump = ws.Range("K2").Value
+        tickInc = ws.Range("I2").Value
+        decline = ws.Range("K2").Value
+        tickDec = ws.Range("I2").Value
+    End If
+
+    'Set the default value for the greatest total volume
+    tickTotal = ws.Range("I2").Value
+    largeTotal = ws.Range("L2").Value
+    
+    'Set NumRows for the loop to stop at an empty cell
+    NumRows = ws.Range("K4", ws.Range("K2").End(xlDown)).Rows.Count
+    'Select cell K4
+    Range("K4").Select
+    
+    'Check if the percetange change is higher or lower than the default value(s)
+    For j = 4 To NumRows
+        If ws.Cells(j, 11).Value > jump Then
+            jump = ws.Cells(j, 11).Value
+            tickInc = ws.Cells(j, 9).Value
+        ElseIf ws.Cells(j, 11).Value < decline Then
+            decline = ws.Cells(j, 11).Value
+            tickDec = ws.Cells(j, 9).Value
+        End If
+    Next j
+
+    'Set NumRows for the loop to stop at an empty cell
+    NumRows2 = ws.Range("L3", ws.Range("L3").End(xlDown)).Rows.Count
+    'Select cell L3
+    Range("L3").Select
+    
+    For i = 3 To NumRows2
+        If ws.Cells(i, 12).Value > largeTotal Then
+            largeTotal = ws.Cells(i, 12).Value
+            tickTotal = ws.Cells(i, 9).Value
+        End If
+    Next i
+
+    'Insert final values into destinated spots
+    ws.Range("O2").Value = tickInc
+    ws.Range("O3").Value = tickDec
+    ws.Range("P2").Value = jump
+    ws.Range("P3").Value = decline
+    ws.Range("O4").Value = tickTotal
+    ws.Range("P4").Value = largeTotal
+Next
+
+End Sub
